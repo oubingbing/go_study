@@ -15,15 +15,16 @@ func main()  {
 		panic("数据连接失败:"+err.Error())
 	}
 
-	row := db.QueryRow("select * from user where id = ?",11)
+	row := db.QueryRow("select name from user where id = ?",11)
 
-	//var data *[]byte
-	scanError := row.Scan(&user)
+	var name *string
+
+	scanError := row.Scan(&name)
 	if scanError != nil{
 		fmt.Printf("匹配数据错误 %v\n",scanError.Error())
 	}
 
-	fmt.Printf("数据 %v \n",user)
+	fmt.Printf("数据 %v \n",*name)
 
 	defer db.Close()
 }
