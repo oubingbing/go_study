@@ -48,6 +48,22 @@ func NewRabbitMqSample(queueName string) *RabbitMq {
 	return  NewRabbitMq(queueName,"","")
 }
 
+//订阅模式
+func NewRabbitMqSub(exchange string) *RabbitMq {
+	return  NewRabbitMq("",exchange,"")
+}
+
+//路由模式
+func NewRabbitMqRouting(exchange string,routingKey string) *RabbitMq {
+	return  NewRabbitMq("",exchange,routingKey)
+}
+
+//话题模式
+func NewRabbitMqTopic(exchange string,routingKey string) *RabbitMq {
+	return  NewRabbitMq("",exchange,routingKey)
+}
+
+//简单模式发布消息
 func (mq *RabbitMq)PublicSample(message string)  {
 	_,err := mq.channel.QueueDeclare(mq.QueueName, false, false, false, false, nil, )
 	if err != nil{
@@ -59,6 +75,139 @@ func (mq *RabbitMq)PublicSample(message string)  {
 	}
 }
 
+//订阅模式发布消息
+func (mq *RabbitMq) PublicSub(message string)  {
+	//需自行交换机，并且类型是fanou
+	err := mq.channel.ExchangeDeclare(mq.Exchange,"fanout",true,false,false,false,nil)
+	mq.failOrError(err,"创建交换机失败")
+
+	//发布到指定的交换机
+	err = mq.channel.Publish(mq.Exchange,"",false,false,amqp.Publishing{ContentType:"text/plan",Body:[]byte(message)})
+	mq.failOrError(err,"创建交换机失败")
+}
+
+//路由模式发布消息
+func (mq *RabbitMq) PublicRouting(message string)  {
+	//需自行交换机，并且类型是direct
+	err := mq.channel.ExchangeDeclare(mq.Exchange,"direct",true,false,false,false,nil)
+	mq.failOrError(err,"创建交换机失败")
+
+	//发布到指定的交换机,以及指定的key
+	err = mq.channel.Publish(mq.Exchange,mq.Key,false,false,amqp.Publishing{ContentType:"text/plan",Body:[]byte(message)})
+	mq.failOrError(err,"创建交换机失败")
+}
+
+//话题模式发布消息
+func (mq *RabbitMq) PublicTopic(message string)  {
+	//需自行交换机，并且类型是direct
+	err := mq.channel.ExchangeDeclare(mq.Exchange,"topic",true,false,false,false,nil)
+	mq.failOrError(err,"创建交换机失败")
+
+	//发布到指定的交换机,以及指定的key
+	err = mq.channel.Publish(mq.Exchange,mq.Key,false,false,amqp.Publishing{ContentType:"text/plan",Body:[]byte(message)})
+	mq.failOrError(err,"创建交换机失败")
+}
+
+//订阅模式消费消息
+func (mq *RabbitMq)ConsumeSub()  {
+	err := mq.channel.ExchangeDeclare(mq.Exchange,"fanout",true,false,false,false,nil)
+	mq.failOrError(err,"创建交换机失败")
+
+	//队列名为空,排他性
+	var q amqp.Queue
+	q,err = mq.channel.QueueDeclare("", false, false, true, false, nil, )
+	if err != nil{
+		fmt.Printf("创建队列错误：%v\n",err.Error())
+	}
+	//队列绑定交换机
+	err = mq.channel.QueueBind(q.Name,"",mq.Exchange,false,nil)
+	mq.failOrError(err,"队列绑定交换机失败")
+
+
+	msg,err := mq.channel.Consume(mq.QueueName,"",true,false,false,false,nil)
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	chn := make(chan bool)
+	go func() {
+		for m := range  msg {
+			fmt.Printf("接收到的消息：%v\n",string(m.Body))
+			//chn <- true
+		}
+	}()
+
+	fmt.Printf("等待消息...\n")
+	<- chn
+}
+
+//路由模式消费消息
+func (mq *RabbitMq)ConsumeRouting()  {
+	err := mq.channel.ExchangeDeclare(mq.Exchange,"direct",true,false,false,false,nil)
+	mq.failOrError(err,"创建交换机失败")
+
+	//队列名为空,排他性
+	var q amqp.Queue
+	q,err = mq.channel.QueueDeclare("", false, false, true, false, nil, )
+	if err != nil{
+		fmt.Printf("创建队列错误：%v\n",err.Error())
+	}
+	//队列绑定交换机以及指定的key
+	err = mq.channel.QueueBind(q.Name,mq.Key,mq.Exchange,false,nil)
+	mq.failOrError(err,"队列绑定交换机失败")
+
+
+	msg,err := mq.channel.Consume(mq.QueueName,"",true,false,false,false,nil)
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	chn := make(chan bool)
+	go func() {
+		for m := range  msg {
+			fmt.Printf("接收到的消息：%v\n",string(m.Body))
+			//chn <- true
+		}
+	}()
+
+	fmt.Printf("等待消息...\n")
+	<- chn
+}
+
+//话题模式消费消息
+func (mq *RabbitMq)ConsumeTopic()  {
+	err := mq.channel.ExchangeDeclare(mq.Exchange,"topic",true,false,false,false,nil)
+	mq.failOrError(err,"创建交换机失败")
+
+	//队列名为空,排他性
+	var q amqp.Queue
+	q,err = mq.channel.QueueDeclare("", false, false, true, false, nil, )
+	if err != nil{
+		fmt.Printf("创建队列错误：%v\n",err.Error())
+	}
+	//队列绑定交换机以及指定的key
+	err = mq.channel.QueueBind(q.Name,mq.Key,mq.Exchange,false,nil)
+	mq.failOrError(err,"队列绑定交换机失败")
+
+
+	msg,err := mq.channel.Consume(mq.QueueName,"",true,false,false,false,nil)
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	chn := make(chan bool)
+	go func() {
+		for m := range  msg {
+			fmt.Printf("接收到的消息：%v\n",string(m.Body))
+			//chn <- true
+		}
+	}()
+
+	fmt.Printf("等待消息...\n")
+	<- chn
+}
+
+//消费简单模式
 func (mq *RabbitMq)ConsumeSample()  {
 	_,err := mq.channel.QueueDeclare(mq.QueueName, false, false, false, false, nil, )
 	if err != nil{
