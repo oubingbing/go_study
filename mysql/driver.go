@@ -12,7 +12,7 @@ func main()  {
 		fmt.Println(err)
 	}
 
-	rows,rowErr := db.Query("select * from worlds")
+	rows,rowErr := db.Query("select * from worlds limit 1")
 	if rowErr != nil{
 		fmt.Printf("获取行错误：%v\n",rowErr.Error())
 	}
