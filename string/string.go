@@ -21,3 +21,4 @@ func CompareStringByBuilder()  {
 	result := strings.Compare(str,"Hello")
 	fmt.Println(result)
 }
+
