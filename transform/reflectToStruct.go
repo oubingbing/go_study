@@ -30,7 +30,7 @@ func mapStruct(man *Man,data map[string]interface{})  {
 		tag := t.Elem().Field(i).Tag.Get("sql")
 		v.Elem().Field(i).Set(reflect.ValueOf(data[tag]))
 	}
-	fmt.Println(man.Name)
+	fmt.Println(man)
 }
 
 
@@ -91,5 +91,5 @@ func TypeConversion(value string, ntype string) (reflect.Value, error) {
 
 	//else if .......增加其他一些类型的转换
 
-	return reflect.ValueOf(value), errors.New("未知的类型：" + ntype)
+	return reflect.ValueOf(value), nil
 }
