@@ -12,7 +12,7 @@ func main()  {
 
 func CurlGet()  {
 	var response *http.Response
-	response,err := http.Get("http://www.baidu.com")
+	response,err := http.Get("https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2019-12-20&leftTicketDTO.from_station=SZQ&leftTicketDTO.to_station=GZQ&purpose_codes=ADULT")
 	if err != nil{
 		fmt.Printf("错误 %v\n",err.Error())
 	}
@@ -25,3 +25,4 @@ func CurlGet()  {
 
 	fmt.Printf("结果：%v\n",string(result))
 }
+

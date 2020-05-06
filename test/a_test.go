@@ -1,21 +1,16 @@
-package test
+package tgo
 
 import (
-	"fmt"
+	"go_study/test/t_string"
 	"testing"
+	"os/exec"
 )
 
-func main()  {
 
-}
-
-func TestTime(t *testing.T)  {
-	var sum int
-	for i:=0;i<=40000;i++{
-		for j:=0;j<=40000 ;j++  {
-			sum += i*j
-		}
+func TestStr(t *testing.T)  {
+	if t_string.StringL("abc") != 3 {
+		t.Error("测试失败")
 	}
 
-	fmt.Println(sum)
+	exec.Command("go run C:/Users/Administrator/go/src/go_study/bytes.go ")
 }

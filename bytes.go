@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 )
 
 func main()  {
@@ -43,4 +44,10 @@ func compare()  {
 
 	result := bytes.Compare([]byte(a),[]byte(b))
 	fmt.Println(result)//1
+}
+
+func t()  {
+	var reader io.Reader
+	str := []byte("test")
+	fmt.Println(reader.Read(str))
 }
