@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"sync"
 	"time"
 )
 
 var balance int = 50
+
+var m sync.RWMutex
 
 //使用渠道进行控制变量的访问
 func main()  {

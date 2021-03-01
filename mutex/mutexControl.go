@@ -13,18 +13,18 @@ var mx sync.Mutex
 func main()  {
 
 	go func() {
-		Deposit(100)
-		fmt.Printf("first %v\n",Balance())
+		Deposit1(100)
+		fmt.Printf("first %v\n",Balance1())
 	}()
 
 	go func() {
-		Deposit(200)
-		fmt.Printf("second %v\n",Balance())
+		Deposit1(200)
+		fmt.Printf("second %v\n",Balance1())
 
 	}()
 
 	time.Sleep(10)
-	fmt.Printf("总金额：%v\n",Balance())
+	fmt.Printf("总金额：%v\n",Balance1())
 
 }
 

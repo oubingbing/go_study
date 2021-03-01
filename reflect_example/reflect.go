@@ -19,6 +19,14 @@ func main()  {
 	http.ListenAndServe(":8080",nil)
 }
 
+func t()  {
+	i := 1
+	reflect.TypeOf(i)
+	v := reflect.ValueOf(&i)
+	v.Elem().SetInt(10)
+	fmt.Println(i)
+}
+
 func search(resp http.ResponseWriter, req *http.Request) {
 	var data struct {
 		Labels     []string `http:"l"`
